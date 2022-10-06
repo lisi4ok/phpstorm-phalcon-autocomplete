@@ -2,7 +2,7 @@
   <id>phalcon.autocomplete</id>
   <name>Phalcon 5 Autocomplete</name>
   <version>5.0.2</version>
-  <vendor email="master@lisi4ok.com" url="https://github.com/lisi4ok/phpstorm-phalcon-autocomplete">lisi4ok</vendor>
+  <vendor email="master@lisi4ok.com" url="lisi4ok.com">lisi4ok</vendor>
 
   <description><![CDATA[
     Provides autocomplete functionality for Phalcon 5.
