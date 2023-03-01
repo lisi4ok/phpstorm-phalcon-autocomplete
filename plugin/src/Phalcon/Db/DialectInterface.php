@@ -153,10 +153,9 @@ interface DialectInterface
      *
      * @param string $tableName
      * @param string $schemaName
-     * @param bool $ifExists
      * @return string
      */
-    public function dropTable(string $tableName, string $schemaName, bool $ifExists = true): string;
+    public function dropTable(string $tableName, string $schemaName): string;
 
     /**
      * Generates SQL to drop a view
