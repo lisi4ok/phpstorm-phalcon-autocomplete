@@ -3,5 +3,5 @@ Autocomplete Phalcon v5 plugin for PhpStorm based on the [Phalcon/ide-stubs](htt
 
 # Creating .jar
 ```bash
-zip -r phpstorm-phalcon-plugin-v5.2.1.jar *
+zip -r phpstorm-phalcon-plugin-v5.2.2.jar *
 ```
