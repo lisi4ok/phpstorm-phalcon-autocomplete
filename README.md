@@ -5,5 +5,5 @@
 
 ## Creating .jar
 ```bash
-zip -r phpstorm-phalcon-plugin-v5.3.0.jar *
+zip -r phpstorm-phalcon-plugin-v5.3.1.jar *
 ```
