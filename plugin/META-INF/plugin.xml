@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/lisi4ok/phpstorm-phalcon-autocomplete">
   <id>phalcon.autocomplete</id>
   <name>Phalcon Autocomplete v5+</name>
-  <version>5.4.0</version>
+  <version>5.5.0</version>
   <vendor email="master@lisi4ok.com" url="lisi4ok.com">lisi4ok</vendor>
   <description><![CDATA[
     Provides autocomplete functionality for Phalcon PHP Framework.
@@ -9,9 +9,9 @@
   ]]></description>
 
   <change-notes><![CDATA[
-    <h3>5.4.0</h3>
+    <h3>5.5.0</h3>
     <ul>
-      <li>IDE Stubs for Phalcon 5.4.0</li>
+      <li>IDE Stubs for Phalcon 5.5.0</li>
     </ul>
   ]]>
   </change-notes>
