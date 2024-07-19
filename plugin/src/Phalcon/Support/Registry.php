@@ -243,9 +243,9 @@ final class Registry extends Collection
      * String representation of object
      *
      * @link https://php.net/manual/en/serializable.serialize.php
-     * @return string
+     * @return string|null
      */
-    final public function serialize(): string
+    final public function serialize(): string|null
     {
     }
 
@@ -288,10 +288,10 @@ final class Registry extends Collection
      * Constructs the object
      *
      * @link https://php.net/manual/en/serializable.unserialize.php
-     * @param mixed $serialized
+     * @param string $data
      * @return void
      */
-    final public function unserialize($serialized): void
+    final public function unserialize(string $data): void
     {
     }
 }
