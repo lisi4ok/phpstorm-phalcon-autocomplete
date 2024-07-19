@@ -12,6 +12,8 @@ namespace Phalcon\Storage\Adapter;
 use DateInterval;
 use DateTime;
 use Exception;
+use Phalcon\Events\EventsAwareInterface;
+use Phalcon\Events\ManagerInterface;
 use Phalcon\Storage\Serializer\SerializerInterface;
 use Phalcon\Storage\SerializerFactory;
 use Phalcon\Support\Exception as SupportException;
@@ -29,7 +31,7 @@ use Phalcon\Support\Exception as SupportException;
  * @property SerializerInterface $serializer
  * @property SerializerFactory   $serializerFactory
  */
-abstract class AbstractAdapter implements \Phalcon\Storage\Adapter\AdapterInterface
+abstract class AbstractAdapter implements \Phalcon\Storage\Adapter\AdapterInterface, \Phalcon\Events\EventsAwareInterface
 {
     /**
      * @var mixed
@@ -73,6 +75,20 @@ abstract class AbstractAdapter implements \Phalcon\Storage\Adapter\AdapterInterf
      * @var SerializerFactory
      */
     protected $serializerFactory;
+
+    /**
+     * Event Manager
+     *
+     * @var ManagerInterface|null
+     */
+    protected $eventsManager = null;
+
+    /**
+     * EventType prefix.
+     *
+     * @var string
+     */
+    protected $eventType = 'storage';
 
     /**
      * AbstractAdapter constructor.
@@ -282,6 +298,36 @@ abstract class AbstractAdapter implements \Phalcon\Storage\Adapter\AdapterInterf
      * @return mixed
      */
     protected function getArrVal(array $collection, $index, $defaultValue = null, string $cast = null): mixed
+    {
+    }
+
+    /**
+     * Sets the event manager
+     *
+     * @param \Phalcon\Events\ManagerInterface $eventsManager
+     * @return void
+     */
+    public function setEventsManager(\Phalcon\Events\ManagerInterface $eventsManager): void
+    {
+    }
+
+    /**
+     * Get the event manager
+     *
+     * @return ManagerInterface|null
+     */
+    public function getEventsManager(): ManagerInterface|null
+    {
+    }
+
+    /**
+     * Trigger an event for the eventsManager.
+     *
+     * @param string $eventName
+     * @param mixed $keys
+     * @return void
+     */
+    protected function fire(string $eventName, $keys): void
     {
     }
 }

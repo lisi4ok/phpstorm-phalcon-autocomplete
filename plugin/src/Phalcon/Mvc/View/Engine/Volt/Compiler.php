@@ -634,9 +634,9 @@ class Compiler implements \Phalcon\Di\InjectionAwareInterface
      *
      * @param string $viewCode
      * @param bool $extendsMode
-     * @return string
+     * @return array|string
      */
-    protected function compileSource(string $viewCode, bool $extendsMode = false): string
+    protected function compileSource(string $viewCode, bool $extendsMode = false): string|array
     {
     }
 

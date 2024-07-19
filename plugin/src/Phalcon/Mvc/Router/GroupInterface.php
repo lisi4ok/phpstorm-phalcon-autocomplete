@@ -188,9 +188,9 @@ interface GroupInterface
     /**
      * Returns the hostname restriction
      *
-     * @return string
+     * @return string|null
      */
-    public function getHostname(): string;
+    public function getHostname(): string|null;
 
     /**
      * Returns the common paths defined for this group

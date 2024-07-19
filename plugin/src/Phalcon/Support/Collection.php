@@ -262,9 +262,9 @@ class Collection implements \ArrayAccess, \Phalcon\Support\Collection\Collection
      * String representation of object
      * See [serialize](https://php.net/manual/en/serializable.serialize.php)
      *
-     * @return string
+     * @return string|null
      */
-    public function serialize(): string
+    public function serialize(): string|null
     {
     }
 
@@ -298,10 +298,10 @@ class Collection implements \ArrayAccess, \Phalcon\Support\Collection\Collection
      * Constructs the object
      * See [unserialize](https://php.net/manual/en/serializable.unserialize.php)
      *
-     * @param string $serialized
+     * @param string $data
      * @return void
      */
-    public function unserialize(string $serialized): void
+    public function unserialize(string $data): void
     {
     }
 

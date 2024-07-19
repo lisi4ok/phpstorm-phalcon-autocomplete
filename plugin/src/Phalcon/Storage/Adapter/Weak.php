@@ -21,7 +21,7 @@ use Phalcon\Storage\Serializer\SerializerInterface;
 class Weak extends \Phalcon\Storage\Adapter\AbstractAdapter
 {
     /**
-     * @var int|null
+     * @var string|null
      */
     protected $fetching = null;
 

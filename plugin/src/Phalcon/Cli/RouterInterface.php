@@ -72,17 +72,17 @@ interface RouterInterface
      * Returns a route object by its id
      *
      * @param mixed $id
-     * @return bool|RouteInterface
+     * @return RouteInterface
      */
-    public function getRouteById($id): RouteInterface|bool;
+    public function getRouteById($id): RouteInterface;
 
     /**
      * Returns a route object by its name
      *
      * @param string $name
-     * @return bool|RouteInterface
+     * @return RouteInterface
      */
-    public function getRouteByName(string $name): RouteInterface|bool;
+    public function getRouteByName(string $name): RouteInterface;
 
     /**
      * Return all the routes defined in the router
@@ -109,25 +109,25 @@ interface RouterInterface
      * Sets the default action name
      *
      * @param string $actionName
-     * @return RouterInterface
+     * @return void
      */
-    public function setDefaultAction(string $actionName): RouterInterface;
+    public function setDefaultAction(string $actionName): void;
 
     /**
      * Sets the name of the default module
      *
      * @param string $moduleName
-     * @return RouterInterface
+     * @return void
      */
-    public function setDefaultModule(string $moduleName): RouterInterface;
+    public function setDefaultModule(string $moduleName): void;
 
     /**
      * Sets an array of default paths
      *
      * @param array $defaults
-     * @return RouterInterface
+     * @return void
      */
-    public function setDefaults(array $defaults): RouterInterface;
+    public function setDefaults(array $defaults): void;
 
     /**
      * Sets the default task name

@@ -1313,18 +1313,19 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
      * Serializes the object ignoring connections, services, related objects or
      * static properties
      *
-     * @return string
+     * @return string|null
      */
-    public function serialize(): string
+    public function serialize(): string|null
     {
     }
 
     /**
      * Unserializes the object from a serialized string
      *
-     * @param mixed $data
+     * @param string $data
+     * @return void
      */
-    public function unserialize($data)
+    public function unserialize(string $data): void
     {
     }
 
