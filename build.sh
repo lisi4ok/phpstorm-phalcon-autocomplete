@@ -1,7 +1,13 @@
 #!/bin/bash
 
+GITHUB_USER="phalcon"
+GITHUB_REPO="ide-stubs"
+BUILD_DIR="build"
+META_DIR="meta"
+VERSION=""
+
 usage() {
-    echo "Usage: $0 [-v version {major.medium.minor} | example 5.0.0 ]"
+    echo "Usage: $0 [-l][-h][-v version {major.medium.minor} example 5.0.0 ]"
     exit 1
 }
 
@@ -146,13 +152,16 @@ BUILD_DIR="build"
 META_DIR="meta"
 VERSION=""
 
-while getopts ":v:l" opt; do
+while getopts ":v:l:h" opt; do
   case ${opt} in
     v )
       VERSION=$OPTARG
       ;;
     l )
       VERSION=$(latest_github_version ${GITHUB_USER} ${GITHUB_REPO})
+      ;;
+    h )
+      usage
       ;;
     \? )
       usage
