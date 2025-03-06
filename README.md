@@ -3,7 +3,15 @@
 ### PHPStorm autocomplete functionality for Phalcon PHP Framework. 
 #### based on the [Phalcon/ide-stubs](https://github.com/phalcon/ide-stubs)
 
-## Creating .jar
+## Building with latest version
 ```bash
-zip -r ./plugin/phpstorm-phalcon-plugin-v5.8.0.jar *
+bash build.sh -l
+```
+## Building with specific version
+```bash
+bash build.sh -v 5.0.0
+```
+## Building with prompt version
+```bash
+bash build.sh
 ```
