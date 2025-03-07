@@ -1,19 +1,23 @@
 #!/bin/bash
 
-GITHUB_USER="phalcon"
-GITHUB_REPO="ide-stubs"
-BUILD_DIR="build"
-META_DIR="meta"
-VERSION=""
+source ./.env
 
 usage() {
-    echo "Usage: $0 [-l][-h][-v version {major.medium.minor} example 5.0.0 ]"
+    echo "Usage: $0 [-l][-h][-v version {major.medium.minor} (example 5.0.0) ]"
     exit 1
 }
 
-log() {
-    local message="$1"
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - ${message}"
+info() {
+    echo -e "\e[1;33mINFO:\e[0m ${1}"
+}
+
+error() {
+    echo -e "\e[1;31mERROR:\e[0m ${1}"
+    exit 1
+}
+
+success() {
+    echo -e "\e[1;32mSUCCESS:\e[0m ${1}"
 }
 
 latest_github_version() {
@@ -32,13 +36,11 @@ check_version() {
   fi
 
   if [[ ${version} != *"."* ]];then
-    log "ERROR:<-> Invalid version: '${version}'"
-    exit 1
+    error "Invalid version: '${version}'"
   fi
 
   if [[ ! (${version} =~ ${regex}) ]]; then
-    log "ERROR:<-> Invalid version: '${version}'"
-    exit 1
+    error "Invalid version: '${version}'"
   fi
 
   local major=$(echo ${version} | cut -d '.' -f 1)
@@ -46,11 +48,10 @@ check_version() {
   local minor=$(echo ${version} | cut -d '.' -f 3)
 
   if [[ ! -n ${minor} ]]; then
-    log "ERROR:<-> Invalid version (o Minor version): '${version}'"
-    exit 1
+    error "Invalid minor version : '${version}'"
   fi
 
-  log "Starting script for Phalcon version ${major}.${medium}.${minor}:  major ${major}, medium ${medium}, minor ${minor}"
+  info "Starting script for Phalcon version ${major}.${medium}.${minor}:  major ${major}, medium ${medium}, minor ${minor}"
 
   VERSION=${major}.${medium}.${minor}
 }
@@ -63,105 +64,87 @@ build() {
   local major=$(echo ${3} | cut -d '.' -f 1)
 
   if [[ ! -d ${tmp} ]]; then
-    log "Failed to create temporary directory"
-    exit 1
+    eeror "Failed to create temporary directory"
   else
-      log "Created temporary directory ${tmp}"
+    success "Created temporary directory ${tmp}"
   fi
 
-  log "Downloading ${url}"
+  info "Downloading ${url}"
   curl -L -o "${file}" -H "Accept: application/vnd.github.v3+json" -H "User-Agent: Mozilla/5.0" "${url}"
   if [[ $? -ne 0 ]]; then
-    log "Failed to download ${url}"
-    exit 1
+    error "Failed to download ${url}"
   elif [[ ! -f ${file} ]]; then
-    log "Downloaded file not found"
-    exit 1
+    error "Downloaded file not found"
   else
-    log "Download file saved to ${file}"
+    success "Download file saved to ${file}"
   fi
 
-  log "Extracting ${file}"
+  info "Extracting ${file}"
   tar -xvzf ${file} -C ${tmp}
   if [[ $? -ne 0 ]]; then
-    log "Failed to extract ${file}"
-    exit 1
+    error "Failed to extract ${file}"
   else
-    log "Extracted successfully"
+    success "Extracted successfully"
   fi
 
-  log "Creating build directory"
+  info "Creating build directory"
   rm -rf ./${BUILD_DIR}
   mkdir -p ./${BUILD_DIR}
   if [[ $? -ne 0 ]]; then
-    log "Failed to create build directory"
-    exit 1
+    error "Failed to create build directory"
   else
-    log "Build directory created successfully"
+    success "Build directory created successfully"
   fi
   mkdir -p ./${BUILD_DIR}/src/Phalcon
   if [[ $? -ne 0 ]]; then
-    log "Failed to create source directory"
-    exit 1
+    error "Failed to create source directory"
   else
-    log "Source directory created successfully"
+    success "Source directory created successfully"
   fi
-  log "Coping source files"
+
+  info "Coping source files"
   if [[ ! -d ${tmp}/${2}-${3}/src ]]; then
-    log "Source directory not found in ${tmp}/${2}-${3}/src"
-    exit 1
+    error "Source directory not found in ${tmp}/${2}-${3}/src"
   fi
   cp -r ${tmp}/${2}-${3}/src/* ./${BUILD_DIR}/src/Phalcon
   if [[ $? -ne 0 ]]; then
-    log "FAILED: to copy source files"
-    exit 1
+    error "Failed to copy source files"
   else
-    log "COPIED: ${tmp}/${2}-${3}/src --> ./${BUILD_DIR}/src/Phalcon"
+    success "Copied: ${tmp}/${2}-${3}/src --> ./${BUILD_DIR}/src/Phalcon"
   fi
 
-  log "Building META files"
+  info "Building META files"
   cp -r ${META_DIR} ./${BUILD_DIR}/META-INF
   if [[ $? -ne 0 ]]; then
-    log "Failed to copy META files"
-    exit 1
+    error "Failed to copy META files"
   else
-    log "META files copied successfully"
+    success "META files copied successfully"
   fi
   sed -i -e "s/{version}/${3}/g" ./${BUILD_DIR}/META-INF/plugin.xml
   if [ $? -ne 0 ]; then
-    log "Failed to replace version in plugin.xml"
-    exit 1
+    error "Failed to replace version in plugin.xml"
   fi
   sed -i -e "s/{major}/${major}/g" ./${BUILD_DIR}/META-INF/plugin.xml
   if [ $? -ne 0 ]; then
-    log "Failed to replace major version in plugin.xml"
-    exit 1
+    error "Failed to replace major version in plugin.xml"
   fi
 
-  log "Create JAR file"
+  info "Create JAR file"
   zip -r "./${BUILD_DIR}/phpstorm-phalcon-plugin-v${3}.jar" ./${BUILD_DIR}/*
   if [ $? -ne 0 ]; then
-    log "Failed to create JAR file"
-    exit 1
+    error "Failed to create JAR file"
+  else
+    success "JAR file created successfully"
   fi
 }
 
-GITHUB_USER="phalcon"
-GITHUB_REPO="ide-stubs"
-BUILD_DIR="build"
-META_DIR="meta"
-VERSION=""
-
-while getopts ":v:l:h" opt; do
+while getopts ":v:l" opt; do
   case ${opt} in
     v )
       VERSION=$OPTARG
       ;;
     l )
       VERSION=$(latest_github_version ${GITHUB_USER} ${GITHUB_REPO})
-      ;;
-    h )
-      usage
       ;;
     \? )
       usage
