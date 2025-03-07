@@ -106,7 +106,7 @@ build() {
   if [[ ! -d ${tmp}/${2}-${3}/src ]]; then
     error "Source directory not found in ${tmp}/${2}-${3}/src"
   fi
-  cp -r ${tmp}/${2}-${3}/src/* ./${BUILD_DIR}/src/Phalcon
+  cp -r ${tmp}/${2}-${3}/src/* ./${BUILD_DIR}/src/Phalcon/
   if [[ $? -ne 0 ]]; then
     error "Failed to copy source files"
   else
@@ -134,13 +134,37 @@ build() {
   fi
   success "Meta Files successfully created"
 
-
   info "Create JAR file"
   zip -r "./${BUILD_DIR}/phpstorm-phalcon-plugin-v${3}.jar" ./${BUILD_DIR}/*
   if [ $? -ne 0 ]; then
     error "Failed to create JAR file"
   else
     success "JAR file created successfully"
+  fi
+
+  info "Re-creating plugin directory"
+  rm -rf ./${PLUGIN_DIR}
+  mkdir -p ./${PLUGIN_DIR}
+  if [[ $? -ne 0 ]]; then
+    error "Failed to create plugin directory"
+  else
+    success "Plugin directory created successfully"
+  fi
+
+  info "Update plugin files"
+  cp -r ./${BUILD_DIR}/* ./${PLUGIN_DIR}/
+  if [ $? -ne 0 ]; then
+    error "Failed copy files into plugin"
+  else
+    success "Files copied to plugin directory"
+  fi
+
+  info "Remove BUILD directory"
+  rm -rf ./${BUILD_DIR}
+  if [ $? -ne 0 ]; then
+    error "Failed remove build directory"
+  else
+    success "Build directory successfully removed"
   fi
 }
 
