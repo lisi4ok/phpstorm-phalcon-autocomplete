@@ -118,16 +118,22 @@ build() {
   if [[ $? -ne 0 ]]; then
     error "Failed to copy META files"
   else
-    success "META files copied successfully"
+    info "META files copied"
   fi
   sed -i -e "s/{version}/${3}/g" ./${BUILD_DIR}/META-INF/plugin.xml
   if [ $? -ne 0 ]; then
     error "Failed to replace version in plugin.xml"
+  else
+    info "Version replaced"
   fi
   sed -i -e "s/{major}/${major}/g" ./${BUILD_DIR}/META-INF/plugin.xml
   if [ $? -ne 0 ]; then
     error "Failed to replace major version in plugin.xml"
+  else
+    info "Major version replaced"
   fi
+  success "Meta Files successfully created"
+
 
   info "Create JAR file"
   zip -r "./${BUILD_DIR}/phpstorm-phalcon-plugin-v${3}.jar" ./${BUILD_DIR}/*
