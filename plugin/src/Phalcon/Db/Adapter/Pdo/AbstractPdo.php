@@ -15,6 +15,7 @@ use Phalcon\Db\Exception;
 use Phalcon\Db\Result\PdoResult;
 use Phalcon\Db\ResultInterface;
 use Phalcon\Events\ManagerInterface;
+use Phalcon\Support\Settings;
 
 /**
  * Phalcon\Db\Adapter\Pdo is the Phalcon\Db that internally uses PDO to connect
@@ -187,7 +188,7 @@ abstract class AbstractPdo extends AbstractAdapter
 
     /**
      * Sends SQL statements to the database server returning the success state.
-     * Use this method only when the SQL statement sent to the server doesn't
+     * Use this method only when the SQL statement sent to the server does not
      * return any rows
      *
      * ```php

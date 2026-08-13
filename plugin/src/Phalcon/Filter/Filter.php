@@ -12,76 +12,148 @@ namespace Phalcon\Filter;
 /**
  * Lazy loads, stores and exposes sanitizer objects
  *
- * @method int    absint(mixed $input)
- * @method string alnum(mixed $input)
- * @method string alpha(mixed $input)
- * @method bool   bool(mixed $input)
- * @method string email(string $input)
- * @method float  float(mixed $input)
- * @method int    int(string $input)
- * @method string lower(string $input)
- * @method string lowerfirst(string $input)
- * @method mixed  regex(mixed $input, mixed $pattern, mixed $replace)
- * @method mixed  remove(mixed $input, mixed $replace)
- * @method mixed  replace(mixed $input, mixed $source, mixed $target)
- * @method string special(string $input)
- * @method string specialfull(string $input)
- * @method string string(string $input)
- * @method string stringlegacy(mixed $input)
- * @method string striptags(string $input)
- * @method string trim(string $input)
- * @method string upper(string $input)
- * @method string upperFirst(string $input)
- * @method null   upperWords(string $input): strin
- * @method null   url(string $input): strin
+ * @method int          absint(mixed $input)
+ * @method string       alnum(mixed $input)
+ * @method string       alpha(mixed $input)
+ * @method bool         bool(mixed $input)
+ * @method string       email(string $input)
+ * @method float        float(mixed $input)
+ * @method int          int(string $input)
+ * @method string|false ip(string $input, int $filter = FILTER_FLAG_NONE)
+ * @method string       lower(string $input)
+ * @method string       lowerfirst(string $input)
+ * @method mixed        regex(mixed $input, mixed $pattern, mixed $replace)
+ * @method mixed        remove(mixed $input, mixed $replace)
+ * @method mixed        replace(mixed $input, mixed $source, mixed $target)
+ * @method string       special(string $input)
+ * @method string       specialfull(string $input)
+ * @method string       string(string $input)
+ * @method string       stringlegacy(mixed $input)
+ * @method string       striptags(string $input)
+ * @method string       trim(string $input)
+ * @method string       upper(string $input)
+ * @method string       upperFirst(string $input)
+ * @method null         upperWords(string $input): strin
+ * @method null         url(string $input): strin
  *
  * @property array $mapper
  * @property array $services
  */
 class Filter implements \Phalcon\Filter\FilterInterface
 {
+    /**
+     * @var string
+     */
     const FILTER_ABSINT = 'absint';
 
+    /**
+     * @var string
+     */
     const FILTER_ALNUM = 'alnum';
 
+    /**
+     * @var string
+     */
     const FILTER_ALPHA = 'alpha';
 
+    /**
+     * @var string
+     */
     const FILTER_BOOL = 'bool';
 
+    /**
+     * @var string
+     */
     const FILTER_EMAIL = 'email';
 
+    /**
+     * @var string
+     */
     const FILTER_FLOAT = 'float';
 
+    /**
+     * @var string
+     */
     const FILTER_INT = 'int';
 
+    /**
+     * @var string
+     */
+    const FILTER_IP = 'ip';
+
+    /**
+     * @var string
+     */
     const FILTER_LOWER = 'lower';
 
+    /**
+     * @var string
+     */
     const FILTER_LOWERFIRST = 'lowerfirst';
 
+    /**
+     * @var string
+     */
     const FILTER_REGEX = 'regex';
 
+    /**
+     * @var string
+     */
     const FILTER_REMOVE = 'remove';
 
+    /**
+     * @var string
+     */
     const FILTER_REPLACE = 'replace';
 
+    /**
+     * @var string
+     */
     const FILTER_SPECIAL = 'special';
 
+    /**
+     * @var string
+     */
     const FILTER_SPECIALFULL = 'specialfull';
 
+    /**
+     * @var string
+     */
     const FILTER_STRING = 'string';
 
+    /**
+     * @var string
+     */
     const FILTER_STRING_LEGACY = 'stringlegacy';
 
+    /**
+     * @var string
+     */
     const FILTER_STRIPTAGS = 'striptags';
 
+    /**
+     * @var string
+     */
     const FILTER_TRIM = 'trim';
 
+    /**
+     * @var string
+     */
     const FILTER_UPPER = 'upper';
 
+    /**
+     * @var string
+     */
     const FILTER_UPPERFIRST = 'upperfirst';
 
+    /**
+     * @var string
+     */
     const FILTER_UPPERWORDS = 'upperwords';
 
+    /**
+     * @var string
+     */
     const FILTER_URL = 'url';
 
     /**

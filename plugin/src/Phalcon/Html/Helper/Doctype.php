@@ -14,26 +14,59 @@ namespace Phalcon\Html\Helper;
  */
 class Doctype
 {
+    /**
+     * @var int
+     */
     const HTML32 = 1;
 
+    /**
+     * @var int
+     */
     const HTML401_STRICT = 2;
 
+    /**
+     * @var int
+     */
     const HTML401_TRANSITIONAL = 3;
 
+    /**
+     * @var int
+     */
     const HTML401_FRAMESET = 4;
 
+    /**
+     * @var int
+     */
     const HTML5 = 5;
 
+    /**
+     * @var int
+     */
     const XHTML10_STRICT = 6;
 
+    /**
+     * @var int
+     */
     const XHTML10_TRANSITIONAL = 7;
 
+    /**
+     * @var int
+     */
     const XHTML10_FRAMESET = 8;
 
+    /**
+     * @var int
+     */
     const XHTML11 = 9;
 
+    /**
+     * @var int
+     */
     const XHTML20 = 10;
 
+    /**
+     * @var int
+     */
     const XHTML5 = 11;
 
     /**
@@ -44,7 +77,7 @@ class Doctype
     /**
      * @var int
      */
-    private $flag;
+    private $type;
 
     public function __construct()
     {
@@ -53,11 +86,11 @@ class Doctype
     /**
      * Produce a <doctype> tag
      *
-     * @param int    $flag
+     * @param int    $type
      * @param string $delimiter
      * @return Doctype
      */
-    public function __invoke(int $flag = self::HTML5, string $delimiter = '\\n'): Doctype
+    public function __invoke(int $type = self::HTML5, string $delimiter = '\\n'): Doctype
     {
     }
 
@@ -65,6 +98,13 @@ class Doctype
      * @return string
      */
     public function __toString(): string
+    {
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
     {
     }
 }
