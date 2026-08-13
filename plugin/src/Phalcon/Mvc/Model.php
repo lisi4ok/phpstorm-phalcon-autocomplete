@@ -12,7 +12,6 @@ namespace Phalcon\Mvc;
 use JsonSerializable;
 use Phalcon\Db\Adapter\AdapterInterface;
 use Phalcon\Db\Column;
-use Phalcon\Db\DialectInterface;
 use Phalcon\Db\Enum;
 use Phalcon\Db\RawValue;
 use Phalcon\Di\AbstractInjectionAware;
@@ -25,17 +24,42 @@ use Phalcon\Mvc\Model\BehaviorInterface;
 use Phalcon\Mvc\Model\Criteria;
 use Phalcon\Mvc\Model\CriteriaInterface;
 use Phalcon\Mvc\Model\Exception;
+use Phalcon\Mvc\Model\Exceptions\BelongsToRequiresObject;
+use Phalcon\Mvc\Model\Exceptions\BindTypeNotDefined;
+use Phalcon\Mvc\Model\Exceptions\CannotResolveAttribute;
+use Phalcon\Mvc\Model\Exceptions\ColumnNotInMap;
+use Phalcon\Mvc\Model\Exceptions\ColumnNotInTableColumns;
+use Phalcon\Mvc\Model\Exceptions\ColumnNotInTableMap;
+use Phalcon\Mvc\Model\Exceptions\DataTypeNotDefined;
+use Phalcon\Mvc\Model\Exceptions\IdentityNotInColumnMap;
+use Phalcon\Mvc\Model\Exceptions\IdentityNotInTableColumns;
+use Phalcon\Mvc\Model\Exceptions\InvalidDumpResultKey;
+use Phalcon\Mvc\Model\Exceptions\InvalidFindParameters;
+use Phalcon\Mvc\Model\Exceptions\InvalidModelsManagerService;
+use Phalcon\Mvc\Model\Exceptions\InvalidModelsMetadataService;
+use Phalcon\Mvc\Model\Exceptions\MethodNotFound;
+use Phalcon\Mvc\Model\Exceptions\ModelOrmServicesUnavailable;
+use Phalcon\Mvc\Model\Exceptions\PrimaryKeyAttributeNotSet;
+use Phalcon\Mvc\Model\Exceptions\PrimaryKeyRequired;
+use Phalcon\Mvc\Model\Exceptions\PropertyNotAccessible;
+use Phalcon\Mvc\Model\Exceptions\RecordCannotRefresh;
+use Phalcon\Mvc\Model\Exceptions\RecordNotPersisted;
+use Phalcon\Mvc\Model\Exceptions\RelationNotDefined;
+use Phalcon\Mvc\Model\Exceptions\RelationRequiresObjectOrArray;
+use Phalcon\Mvc\Model\Exceptions\SnapshotsDisabled;
+use Phalcon\Mvc\Model\Exceptions\StaticMethodRequiresOneArgument;
+use Phalcon\Mvc\Model\Exceptions\UpdateSnapshotDisabled;
 use Phalcon\Mvc\Model\ManagerInterface;
 use Phalcon\Mvc\Model\MetaDataInterface;
 use Phalcon\Mvc\Model\Query;
 use Phalcon\Mvc\Model\Query\Builder;
 use Phalcon\Mvc\Model\Query\BuilderInterface;
 use Phalcon\Mvc\Model\QueryInterface;
+use Phalcon\Mvc\Model\Relation;
+use Phalcon\Mvc\Model\RelationInterface;
 use Phalcon\Mvc\Model\ResultInterface;
 use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Mvc\Model\ResultsetInterface;
-use Phalcon\Mvc\Model\Relation;
-use Phalcon\Mvc\Model\RelationInterface;
 use Phalcon\Mvc\Model\TransactionInterface;
 use Phalcon\Mvc\Model\ValidationFailed;
 use Phalcon\Mvc\ModelInterface;
@@ -89,42 +113,42 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
     /**
      * @var int
      */
-    const DIRTY_STATE_DETACHED = 2;
+    const int DIRTY_STATE_DETACHED = 2;
 
     /**
      * @var int
      */
-    const DIRTY_STATE_PERSISTENT = 0;
+    const int DIRTY_STATE_PERSISTENT = 0;
 
     /**
      * @var int
      */
-    const DIRTY_STATE_TRANSIENT = 1;
+    const int DIRTY_STATE_TRANSIENT = 1;
 
     /**
      * @var int
      */
-    const OP_CREATE = 1;
+    const int OP_CREATE = 1;
 
     /**
      * @var int
      */
-    const OP_DELETE = 3;
+    const int OP_DELETE = 3;
 
     /**
      * @var int
      */
-    const OP_NONE = 0;
+    const int OP_NONE = 0;
 
     /**
      * @var int
      */
-    const OP_UPDATE = 2;
+    const int OP_UPDATE = 2;
 
     /**
      * @var string
      */
-    const TRANSACTION_INDEX = 'transaction';
+    const string TRANSACTION_INDEX = 'transaction';
 
     /**
      * @var int
@@ -182,6 +206,14 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
     protected $snapshot = [];
 
     /**
+     * Per-save many-to-many sync overrides, keyed by lowercased relation
+     * alias (or "" wildcard) => bool. Cleared after each save().
+     *
+     * @var array
+     */
+    protected $syncRelated = [];
+
+    /**
      * @var TransactionInterface|null
      */
     protected $transaction = null;
@@ -205,10 +237,10 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
      * Phalcon\Mvc\Model constructor
      *
      * @param mixed $data
-     * @param \Phalcon\Di\DiInterface $container
-     * @param \Phalcon\Mvc\Model\ManagerInterface $modelsManager
+     * @param \Phalcon\Di\DiInterface|null $container
+     * @param \Phalcon\Mvc\Model\ManagerInterface|null $modelsManager
      */
-    final public function __construct($data = null, \Phalcon\Di\DiInterface $container = null, \Phalcon\Mvc\Model\ManagerInterface $modelsManager = null)
+    final public function __construct($data = null, ?\Phalcon\Di\DiInterface $container = null, ?\Phalcon\Mvc\Model\ManagerInterface $modelsManager = null)
     {
     }
 
@@ -492,7 +524,7 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
      * @return ModelInterface
      * @param array $data
      */
-    public static function cloneResultMap($base, array $data, $columnMap, int $dirtyState = 0, bool $keepSnapshots = null): ModelInterface
+    public static function cloneResultMap($base, array $data, $columnMap, int $dirtyState = 0, ?bool $keepSnapshots = null): ModelInterface
     {
     }
 
@@ -1270,10 +1302,10 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
     /**
      * Create a criteria for a specific model
      *
-     * @param \Phalcon\Di\DiInterface $container
+     * @param \Phalcon\Di\DiInterface|null $container
      * @return CriteriaInterface
      */
-    public static function query(\Phalcon\Di\DiInterface $container = null): CriteriaInterface
+    public static function query(?\Phalcon\Di\DiInterface $container = null): CriteriaInterface
     {
     }
 
@@ -1420,6 +1452,36 @@ abstract class Model extends AbstractInjectionAware implements \Phalcon\Mvc\Enti
      * @return void
      */
     public function setSnapshotData(array $data, $columnMap = null): void
+    {
+    }
+
+    /**
+     * Marks one or more many-to-many relationships to be synchronized (or not)
+     * on the next save() call, overriding the relation's `sync` option for that
+     * save only. The flag is cleared after save().
+     *
+     * When syncing is enabled, intermediate rows for related records no longer
+     * present in the assigned array are deleted.
+     *
+     * ```php
+     * // Sync only the "tags" relationship on this save
+     * $post->setSync("tags")->save();
+     *
+     * // Sync every many-to-many relationship on this save
+     * $post->setSync()->save();
+     *
+     * // Disable syncing for every relationship on this save
+     * $post->setSync("", false)->save();
+     *
+     * // Disable syncing for specific relationships on this save
+     * $post->setSync(["tags", "categories"], false)->save();
+     * ```
+     *
+     * @param string|array|null $elements
+     * @param bool $enabled
+     * @return ModelInterface
+     */
+    public function setSync($elements = null, bool $enabled = true): ModelInterface
     {
     }
 

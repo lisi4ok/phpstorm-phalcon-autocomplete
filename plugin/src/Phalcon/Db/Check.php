@@ -9,6 +9,9 @@
  */
 namespace Phalcon\Db;
 
+use Phalcon\Db\Exceptions\CheckExpressionRequired;
+use Phalcon\Db\Exceptions\InvalidCheckExpression;
+
 /**
  * Allows to define `CHECK` constraints on tables. CHECK constraints enforce
  * a boolean SQL predicate on each row of the table; rows that fail the
@@ -50,7 +53,7 @@ class Check implements \Phalcon\Db\CheckInterface
 
     /**
      * The CHECK constraint name. An empty string indicates an unnamed
-     * constraint — the dialect will emit the clause without a `CONSTRAINT`
+     * constraint - the dialect will emit the clause without a `CONSTRAINT`
      * prefix in that case.
      *
      * @var string

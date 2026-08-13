@@ -17,7 +17,7 @@ interface Manager
     /**
      * @var int
      */
-    const DEFAULT_PRIORITY = 100;
+    const int DEFAULT_PRIORITY = 100;
 
 
     /**
@@ -73,12 +73,12 @@ interface Manager
     public function detach(string $eventType, $handler): void;
 
     /**
-     * Removes all listeners — globally or for a single event type.
+     * Removes all listeners - globally or for a single event type.
      *
-     * @param string $type
+     * @param string|null $type
      * @return void
      */
-    public function detachAll(string $type = null): void;
+    public function detachAll(?string $type = null): void;
 
     /**
      * Toggle priority ordering on/off.

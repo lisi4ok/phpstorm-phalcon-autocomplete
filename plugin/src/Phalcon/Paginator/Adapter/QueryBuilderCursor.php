@@ -11,6 +11,9 @@ namespace Phalcon\Paginator\Adapter;
 
 use Phalcon\Mvc\Model\Query\Builder;
 use Phalcon\Paginator\Exception;
+use Phalcon\Paginator\Exceptions\InvalidBuilderInstance;
+use Phalcon\Paginator\Exceptions\InvalidCursorColumn;
+use Phalcon\Paginator\Exceptions\MissingRequiredParameter;
 use Phalcon\Paginator\RepositoryInterface;
 
 /**
@@ -51,9 +54,9 @@ use Phalcon\Paginator\RepositoryInterface;
  * );
  *
  * $page = $paginator->paginate();
- * // $page->getItems()   — array of rows for this page
- * // $page->getNext()    — cursor value to pass for the next page (0 means no more pages)
- * // $page->getCurrent() — cursor value used for this page (0 on first page)
+ * // $page->getItems()   - array of rows for this page
+ * // $page->getNext()    - cursor value to pass for the next page (0 means no more pages)
+ * // $page->getCurrent() - cursor value used for this page (0 on first page)
  * ```
  */
 class QueryBuilderCursor extends \Phalcon\Paginator\Adapter\AbstractAdapter
@@ -152,9 +155,9 @@ class QueryBuilderCursor extends \Phalcon\Paginator\Adapter\AbstractAdapter
      * next page, or null to restart from the first page.
      *
      * @param mixed $cursor
-     * @return QueryBuilderCursor
+     * @return static
      */
-    public function setCursor($cursor): QueryBuilderCursor
+    public function setCursor($cursor): static
     {
     }
 
@@ -162,9 +165,9 @@ class QueryBuilderCursor extends \Phalcon\Paginator\Adapter\AbstractAdapter
      * Set query builder object
      *
      * @param \Phalcon\Mvc\Model\Query\Builder $builder
-     * @return QueryBuilderCursor
+     * @return static
      */
-    public function setQueryBuilder(\Phalcon\Mvc\Model\Query\Builder $builder): QueryBuilderCursor
+    public function setQueryBuilder(\Phalcon\Mvc\Model\Query\Builder $builder): static
     {
     }
 }

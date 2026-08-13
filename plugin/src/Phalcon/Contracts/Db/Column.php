@@ -12,7 +12,7 @@ namespace Phalcon\Contracts\Db;
 /**
  * Canonical contract for Phalcon\Db\Column.
  *
- * @todo v7 — these will become required interface members. They are
+ * @todo v7 - these will become required interface members. They are
  *            omitted from the v5 line to avoid breaking third-party
  *            implementors:
  *              - getGenerationExpression() : string | null
@@ -82,9 +82,9 @@ interface Column
     /**
      * Returns column type values
      *
-     * @return array|string
+     * @return array|string|int
      */
-    public function getTypeValues(): string|array;
+    public function getTypeValues(): int|string|array;
 
     /**
      * Check whether column has default value

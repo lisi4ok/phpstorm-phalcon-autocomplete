@@ -9,6 +9,17 @@
  */
 namespace Phalcon\Db;
 
+use Phalcon\Db\Exceptions\ConflictTargetColumnRequired;
+use Phalcon\Db\Exceptions\ConflictUpdateColumnRequired;
+use Phalcon\Db\Exceptions\InvalidGroupByExpression;
+use Phalcon\Db\Exceptions\InvalidListExpression;
+use Phalcon\Db\Exceptions\InvalidOrderByExpression;
+use Phalcon\Db\Exceptions\InvalidSqlExpression;
+use Phalcon\Db\Exceptions\InvalidSqlExpressionType;
+use Phalcon\Db\Exceptions\InvalidUnaryExpression;
+use Phalcon\Db\Exceptions\MaterializedViewsNotSupported;
+use Phalcon\Db\Exceptions\MissingDefinitionKey;
+use Phalcon\Db\Exceptions\ReturningNotSupported;
 use Phalcon\Support\Settings;
 
 /**
@@ -41,10 +52,10 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Escape identifiers
      *
      * @param string $str
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @return string
      */
-    final public function escape(string $str, string $escapeChar = null): string
+    final public function escape(string $str, ?string $escapeChar = null): string
     {
     }
 
@@ -52,10 +63,10 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Escape Schema
      *
      * @param string $str
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @return string
      */
-    final public function escapeSchema(string $str, string $escapeChar = null): string
+    final public function escapeSchema(string $str, ?string $escapeChar = null): string
     {
     }
 
@@ -101,11 +112,11 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * ```
      *
      * @param array $columnList
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @param array $bindCounts
      * @return string
      */
-    final public function getColumnList(array $columnList, string $escapeChar = null, array $bindCounts = []): string
+    final public function getColumnList(array $columnList, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -126,7 +137,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final public function getSqlColumn($column, string $escapeChar = null, array $bindCounts = []): string
+    final public function getSqlColumn($column, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -134,11 +145,11 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Transforms an intermediate representation for an expression into a database system valid expression
      *
      * @param array $expression
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @param array $bindCounts
      * @return string
      */
-    public function getSqlExpression(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    public function getSqlExpression(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -147,10 +158,10 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * database system valid expression
      *
      * @param mixed $table
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @return string
      */
-    final public function getSqlTable($table, string $escapeChar = null): string
+    final public function getSqlTable($table, ?string $escapeChar = null): string
     {
     }
 
@@ -184,23 +195,23 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      *
      * @param string $name
      * @param callable $customFunction
-     * @return Dialect
+     * @return static
      */
-    public function registerCustomFunction(string $name, $customFunction): Dialect
+    public function registerCustomFunction(string $name, $customFunction): static
     {
     }
 
     /**
      * Generates SQL to create a materialized view. Supported by PostgreSQL
      * (`CREATE MATERIALIZED VIEW name AS <sql>`). Other dialects inherit
-     * this throw — MySQL and SQLite have no materialized-view concept.
+     * this throw - MySQL and SQLite have no materialized-view concept.
      *
      * @param string $viewName
      * @param array $definition
-     * @param string $schemaName
+     * @param string|null $schemaName
      * @return string
      */
-    public function createMaterializedView(string $viewName, array $definition, string $schemaName = null): string
+    public function createMaterializedView(string $viewName, array $definition, ?string $schemaName = null): string
     {
     }
 
@@ -208,11 +219,11 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Generates SQL to drop a materialized view. Supported by PostgreSQL.
      *
      * @param string $viewName
-     * @param string $schemaName
+     * @param string|null $schemaName
      * @param bool $ifExists
      * @return string
      */
-    public function dropMaterializedView(string $viewName, string $schemaName = null, bool $ifExists = true): string
+    public function dropMaterializedView(string $viewName, ?string $schemaName = null, bool $ifExists = true): string
     {
     }
 
@@ -223,11 +234,11 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * the view to have a unique index).
      *
      * @param string $viewName
-     * @param string $schemaName
+     * @param string|null $schemaName
      * @param bool $concurrent
      * @return string
      */
-    public function refreshMaterializedView(string $viewName, string $schemaName = null, bool $concurrent = false): string
+    public function refreshMaterializedView(string $viewName, ?string $schemaName = null, bool $concurrent = false): string
     {
     }
 
@@ -251,7 +262,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Returns a SQL statement extended with a `RETURNING` clause so the
      * INSERT/UPDATE/DELETE returns rows. Supported by PostgreSQL and
      * SQLite 3.35+. Pass `[""]` for `RETURNING`, or a list of column
-     * names. The base implementation throws — MySQL inherits it because
+     * names. The base implementation throws - MySQL inherits it because
      * MySQL has no RETURNING construct.
      *
      * @param string $sqlQuery
@@ -353,7 +364,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
     /**
      * Builds a CHECK constraint clause from a `CheckInterface`, using the
      * provided escape character for the constraint name (so each dialect
-     * gets its native quoting). Returns the clause body — the dialect's
+     * gets its native quoting). Returns the clause body - the dialect's
      * `createTable()` / `addCheck()` is expected to prefix `ADD` or place
      * the result on its own line as appropriate.
      *
@@ -385,7 +396,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Builds the `GENERATED ALWAYS AS (<expr>) VIRTUAL|STORED` clause for a
      * generated/computed column. Returns an empty string when the column is
      * not generated. When `forceStored` is `true` the clause is always emitted
-     * as `STORED` regardless of the column's `isGenerationStored()` flag —
+     * as `STORED` regardless of the column's `isGenerationStored()` flag -
      * PostgreSQL uses this since it only supports stored generated columns.
      *
      * @param ColumnInterface $column
@@ -400,10 +411,10 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Resolve
      *
      * @param array $expression
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @return string
      */
-    final protected function getSqlExpressionAll(array $expression, string $escapeChar = null): string
+    final protected function getSqlExpressionAll(array $expression, ?string $escapeChar = null): string
     {
     }
 
@@ -415,7 +426,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionBinaryOperations(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionBinaryOperations(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -427,7 +438,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionCase(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionCase(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -439,7 +450,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionCastValue(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionCastValue(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -451,7 +462,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionConvertValue(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionConvertValue(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -459,10 +470,10 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Resolve a FROM clause
      *
      * @param mixed $expression
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @return string
      */
-    final protected function getSqlExpressionFrom($expression, string $escapeChar = null): string
+    final protected function getSqlExpressionFrom($expression, ?string $escapeChar = null): string
     {
     }
 
@@ -474,7 +485,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionFunctionCall(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionFunctionCall(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -486,7 +497,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionGroupBy($expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionGroupBy($expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -498,7 +509,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionHaving(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionHaving(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -510,7 +521,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionJoins($expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionJoins($expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -522,7 +533,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionLimit($expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionLimit($expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -534,7 +545,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionList(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionList(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -546,7 +557,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionObject(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionObject(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -558,7 +569,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionOrderBy($expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionOrderBy($expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -566,10 +577,10 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Resolve qualified expressions
      *
      * @param array $expression
-     * @param string $escapeChar
+     * @param string|null $escapeChar
      * @return string
      */
-    final protected function getSqlExpressionQualified(array $expression, string $escapeChar = null): string
+    final protected function getSqlExpressionQualified(array $expression, ?string $escapeChar = null): string
     {
     }
 
@@ -581,7 +592,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts
      * @return string
      */
-    final protected function getSqlExpressionScalar(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionScalar(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -593,7 +604,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionUnaryOperations(array $expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionUnaryOperations(array $expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -605,7 +616,7 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * @param array $bindCounts *
      * @return string
      */
-    final protected function getSqlExpressionWhere($expression, string $escapeChar = null, array $bindCounts = []): string
+    final protected function getSqlExpressionWhere($expression, ?string $escapeChar = null, array $bindCounts = []): string
     {
     }
 
@@ -613,11 +624,11 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Prepares column for this RDBMS
      *
      * @param string $qualified
-     * @param string $alias
-     * @param string $escapeChar
+     * @param string|null $alias
+     * @param string|null $escapeChar
      * @return string
      */
-    protected function prepareColumnAlias(string $qualified, string $alias = null, string $escapeChar = null): string
+    protected function prepareColumnAlias(string $qualified, ?string $alias = null, ?string $escapeChar = null): string
     {
     }
 
@@ -625,12 +636,12 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Prepares table for this RDBMS
      *
      * @param string $table
-     * @param string $schema
-     * @param string $alias
-     * @param string $escapeChar
+     * @param string|null $schema
+     * @param string|null $alias
+     * @param string|null $escapeChar
      * @return string
      */
-    protected function prepareTable(string $table, string $schema = null, string $alias = null, string $escapeChar = null): string
+    protected function prepareTable(string $table, ?string $schema = null, ?string $alias = null, ?string $escapeChar = null): string
     {
     }
 
@@ -638,11 +649,11 @@ abstract class Dialect implements \Phalcon\Db\DialectInterface
      * Prepares qualified for this RDBMS
      *
      * @param string $column
-     * @param string $domain
-     * @param string $escapeChar
+     * @param string|null $domain
+     * @param string|null $escapeChar
      * @return string
      */
-    protected function prepareQualified(string $column, string $domain = null, string $escapeChar = null): string
+    protected function prepareQualified(string $column, ?string $domain = null, ?string $escapeChar = null): string
     {
     }
 }

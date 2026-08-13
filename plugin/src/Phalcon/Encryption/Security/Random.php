@@ -9,6 +9,8 @@
  */
 namespace Phalcon\Encryption\Security;
 
+use Phalcon\Encryption\Security\Exceptions\InvalidRandomInput;
+
 /**
  * Phalcon\Encryption\Security\Random
  *
@@ -51,7 +53,7 @@ namespace Phalcon\Encryption\Security;
  * echo $random->base64Safe(8);          // mGyy0evy3ok
  * echo $random->base64Safe(null, true); // DRrAgOFkS4rvRiVHFefcQ==
  *
- * // Random UUID (version 4) — returns a string
+ * // Random UUID (version 4) - returns a string
  * echo $random->uuid(); // db082997-2572-4e2c-a046-5eefe97b1235
  * echo $random->uuid(); // da2aa0e2-b4d0-4e3c-99f5-f5ef62c57fe2
  *
@@ -270,10 +272,10 @@ class Random
      * @throws Exception If secure random number generator is not available or unexpected partial read
      * @param string $alphabet
      * @param int $base
-     * @param mixed $n
+     * @param mixed $number
      * @return string
      */
-    protected function base(string $alphabet, int $base, $n = 16): string
+    protected function base(string $alphabet, int $base, $number = 16): string
     {
     }
 }
