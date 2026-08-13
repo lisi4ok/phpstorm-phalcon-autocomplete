@@ -15,13 +15,20 @@ namespace Phalcon\Events;
 interface ManagerInterface
 {
     /**
+     * @var int
+     */
+    const DEFAULT_PRIORITY = 100;
+
+
+    /**
      * Attach a listener to the events manager
      *
      * @param object|callable $handler
      * @param string $eventType
+     * @param int $priority
      * @return void
      */
-    public function attach(string $eventType, $handler): void;
+    public function attach(string $eventType, $handler, int $priority = self::DEFAULT_PRIORITY): void;
 
     /**
      * Detach the listener from the events manager
